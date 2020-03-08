@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="fbb8aadd-f014-46e9-8586-e0d9fc381c8d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="2c1085f3-28ba-47ee-830c-75d53bd80f63" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<flow name="activemqwithattributereadFlow" doc:id="2f2dc507-5c95-4080-a919-641265e77ea0" >
+		<http:listener doc:name="Listener" doc:id="6fa95d98-0f64-40ff-b8e3-a7222e137c8e" config-ref="HTTP_Listener_config" path="/attr"/>
+		<logger level="INFO" doc:name="Logger" doc:id="93f75247-aa5e-4ec9-8359-f4af3e823baf" message="#[payload]"/>
+		<foreach doc:name="For Each" doc:id="f41f1ac7-6bb6-433d-a0cd-2f42e27d9bd8" collection="#[payload.record]">
+			<logger level="INFO" doc:name="Logger" doc:id="74516a57-1089-4e8d-ab7a-991b83f0efd2" message="#[payload.person.@Dest]"/>
+			<jms:publish doc:name="Publish" doc:id="c9afde93-1c7c-4357-9402-1f26280899b1" config-ref="JMS_Config" destination="#[payload.person.@Dest]" />
+		</foreach>
+	</flow>
+</mule>
