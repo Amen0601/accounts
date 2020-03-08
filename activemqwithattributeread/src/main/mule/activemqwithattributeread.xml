@@ -21,5 +21,15 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			<logger level="INFO" doc:name="Logger" doc:id="74516a57-1089-4e8d-ab7a-991b83f0efd2" message="#[payload.person.@Dest]"/>
 			<jms:publish doc:name="Publish" doc:id="c9afde93-1c7c-4357-9402-1f26280899b1" config-ref="JMS_Config" destination="#[payload.person.@Dest]" />
 		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="40e54e11-7ad4-4133-8e57-17d5667c55b8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 </mule>
